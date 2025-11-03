@@ -16,7 +16,7 @@ This guide explains how to use the report system in Google Colab for cloud-based
 
 Click the badge in the main README or visit:
 ```
-https://colab.research.google.com/github/yourusername/html-report-system/blob/main/HTML_Report_System_Colab.ipynb
+https://colab.research.google.com/github/M4rceli/report/blob/main/HTML_Report_System_Colab.ipynb
 ```
 
 ### Step 2: Run the Setup

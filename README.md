@@ -19,7 +19,7 @@ A flexible HTML-based reporting system that allows multiple users to edit differ
 
 **Perfect for teams - no installation needed!**
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yourusername/html-report-system/blob/main/HTML_Report_System_Colab.ipynb)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/M4rceli/report/blob/main/HTML_Report_System_Colab.ipynb)
 
 1. Click the badge above
 2. Run all cells (Runtime → Run all)
@@ -31,8 +31,8 @@ A flexible HTML-based reporting system that allows multiple users to edit differ
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/html-report-system.git
-cd html-report-system
+git clone https://github.com/M4rceli/report.git
+cd report
 ```
 
 ### 2. Open the Report
