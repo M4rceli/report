@@ -3,7 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Raport - System Edycji Sekcji</title>
+    <title>Raport - System        .section-actions {
+            padding: 15px 20px;
+            background-color: #f8f9fa;
+            border-top: 1px solid #ecf0f1;
+        }
+
+        @media print {i</title>
     <style>
         * {
             margin: 0;
@@ -178,8 +184,9 @@
             display: none;
         }
 
+        .edit-mode .section-actions,
         .section-actions.edit-mode {
-            display: block;
+            display: block !important;
         }
 
         .status-message {
@@ -307,7 +314,7 @@
                         placeholder="Wprowadź wnioski i rekomendacje..."></textarea>
                 </div>
             </div>
-            <div class="section-actions">
+            <div class="section-actions" style="display: none;">
                 <button class="btn btn-success" onclick="saveSection('executive-summary')">
                     💾 Zapisz sekcję
                 </button>
@@ -349,7 +356,7 @@
                         placeholder="Opisz wyzwania techniczne i ich rozwiązania..."></textarea>
                 </div>
             </div>
-            <div class="section-actions">
+            <div class="section-actions" style="display: none;">
                 <button class="btn btn-success" onclick="saveSection('technical-analysis')">
                     💾 Zapisz sekcję
                 </button>
@@ -391,7 +398,7 @@
                         placeholder="Wprowadź analizę ROI..."></textarea>
                 </div>
             </div>
-            <div class="section-actions">
+            <div class="section-actions" style="display: none;">
                 <button class="btn btn-success" onclick="saveSection('financial-analysis')">
                     💾 Zapisz sekcję
                 </button>
@@ -425,7 +432,7 @@
                         placeholder="Opisz dalsze kroki i rekomendacje..."></textarea>
                 </div>
             </div>
-            <div class="section-actions">
+            <div class="section-actions" style="display: none;">
                 <button class="btn btn-success" onclick="saveSection('summary')">
                     💾 Zapisz sekcję
                 </button>
@@ -478,18 +485,15 @@
                 completeBtn.style.display = 'inline-block';
                 
                 // Pokaż pola edycji, ukryj widok
-                document.querySelectorAll('.edit-mode').forEach(el => {
-                    if (el.tagName === 'TEXTAREA' || el.tagName === 'INPUT') {
-                        el.style.display = 'block';
-                    } else {
-                        el.style.display = 'block';
-                    }
+                document.querySelectorAll('.field-input').forEach(el => {
+                    el.style.display = 'block';
                 });
-                document.querySelectorAll('.view-mode').forEach(el => {
+                document.querySelectorAll('.field-value').forEach(el => {
                     el.style.display = 'none';
                 });
+                // Pokaż przyciski zapisywania
                 document.querySelectorAll('.section-actions').forEach(el => {
-                    el.classList.add('edit-mode');
+                    el.style.display = 'block';
                 });
             } else {
                 indicator.textContent = 'Tryb: PODGLĄD';
@@ -500,18 +504,15 @@
                 completeBtn.style.display = 'none';
                 
                 // Pokaż widok, ukryj pola edycji
-                document.querySelectorAll('.edit-mode').forEach(el => {
-                    if (el.tagName === 'TEXTAREA' || el.tagName === 'INPUT') {
-                        el.style.display = 'none';
-                    } else {
-                        el.style.display = 'none';
-                    }
+                document.querySelectorAll('.field-input').forEach(el => {
+                    el.style.display = 'none';
                 });
-                document.querySelectorAll('.view-mode').forEach(el => {
+                document.querySelectorAll('.field-value').forEach(el => {
                     el.style.display = 'block';
                 });
+                // Ukryj przyciski zapisywania
                 document.querySelectorAll('.section-actions').forEach(el => {
-                    el.classList.remove('edit-mode');
+                    el.style.display = 'none';
                 });
             }
         }
