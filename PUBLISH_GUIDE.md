@@ -51,22 +51,18 @@ git push -u origin main
 
 Po pushu sprawdź czy wszystko jest na GitHub:
 - ✅ README.md wyświetla się poprawnie
-- ✅ Badge "Open in Colab" działa
 - ✅ Wszystkie pliki są obecne
 - ✅ Foldery (saved_sections, generated_pdfs, examples, docs) istnieją
+- ✅ HTML raport działa lokalnie
 
-### 5. Test Colab
+### 5. Test lokalny
 
-Otwórz link:
-```
-https://colab.research.google.com/github/M4rceli/report/blob/main/HTML_Report_System_Colab.ipynb
-```
-
-Sprawdź czy:
-- ✅ Notebook się otwiera
-- ✅ Wszystkie cele się wykonują
-- ✅ Otrzymujesz URL ngrok
-- ✅ Raport działa w przeglądarce
+Otwórz raport lokalnie aby sprawdzić:
+- ✅ HTML otwiera się w przeglądarce
+- ✅ Tryb edycji działa
+- ✅ Zapisywanie sekcji działa
+- ✅ Wczytywanie danych działa
+- ✅ File manager działa (jeśli używasz Pythona)
 
 ### 6. Stwórz Release (opcjonalnie)
 
@@ -113,21 +109,21 @@ HTML-based reporting system with multi-user editing and Google Colab support
 - `html`
 - `reporting`
 - `collaboration`
-- `google-colab`
 - `pdf-generation`
 - `javascript`
 - `python`
 - `no-server`
 - `offline-first`
 
-**Website:**
+**Website (optional):**
 ```
-https://colab.research.google.com/github/M4rceli/report/blob/main/HTML_Report_System_Colab.ipynb
+https://m4rceli.github.io/report/report_template.html
 ```
+(if you enable GitHub Pages)
 
 ### 8. Opcjonalnie - GitHub Pages
 
-Możesz włączyć GitHub Pages dla demo:
+Możesz włączyć GitHub Pages dla live demo:
 
 1. Settings → Pages
 2. Source: **Deploy from branch**
@@ -139,7 +135,12 @@ Twój raport będzie dostępny pod:
 https://M4rceli.github.io/report/report_template.html
 ```
 
-### 9. Dodaj badge do README (opcjonalnie)
+Możesz wtedy dodać link w README:
+```markdown
+🔗 [Live Demo](https://M4rceli.github.io/report/report_template.html)
+```
+
+### 9. Dodaj badges do README (opcjonalnie)
 
 Możesz dodać więcej badges:
 
@@ -202,10 +203,10 @@ git merge feature/nowa-funkcja
 
 - [ ] Wszystkie pliki commitowane
 - [ ] README.md zaktualizowany z prawidłowymi linkami
-- [ ] Badge "Open in Colab" działa
+- [ ] Pliki Colab usunięte (jeśli nie są potrzebne)
 - [ ] LICENSE file obecny
 - [ ] .gitignore skonfigurowany
-- [ ] Notebook Colab przetestowany
+- [ ] HTML raport przetestowany lokalnie
 - [ ] Przykładowe pliki JSON w examples/
 - [ ] Dokumentacja kompletna
 - [ ] GitHub remote dodany

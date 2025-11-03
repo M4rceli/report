@@ -16,9 +16,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Metadata tracking (author, timestamp)
 - PDF generation with multiple methods:
   - Browser-based (no dependencies)
-  - WeasyPrint support
-  - Playwright support
-  - pdfkit support
+  - WeasyPrint support (optional)
+  - Playwright support (optional)
+  - pdfkit support (optional)
 - File management utility (`file_manager.py`)
   - Auto-move files from Downloads
   - List saved sections
@@ -38,7 +38,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Features
 - No server required - works completely offline
-- Multi-user collaboration support
+- Multi-user collaboration support (via file sharing)
 - Responsive design
 - Print-friendly styling
 - Cross-browser compatible

@@ -4,7 +4,7 @@ Additional documentation for HTML Report System.
 
 ## Contents
 
-- [COLAB_GUIDE.md](COLAB_GUIDE.md) - Complete guide for using Google Colab version
+Currently no additional documentation files.
 
 ## Quick Links
 
@@ -17,5 +17,5 @@ Additional documentation for HTML Report System.
 
 For questions and issues, please check:
 1. The relevant documentation file
-2. [GitHub Issues](https://github.com/yourusername/html-report-system/issues)
+2. [GitHub Issues](https://github.com/M4rceli/report/issues)
 3. Existing discussions
