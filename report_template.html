@@ -1,15 +1,9 @@
 <!DOCTYPE html>
-<html lang="pl">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Raport - System        .section-actions {
-            padding: 15px 20px;
-            background-color: #f8f9fa;
-            border-top: 1px solid #ecf0f1;
-        }
-
-        @media print {i</title>
+    <title>Data Quality Report - Section Editing System</title>
     <style>
         * {
             margin: 0;
@@ -252,214 +246,222 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>Raport Projektu</h1>
-            <p>System edycji sekcji z możliwością zapisu postępów</p>
+            <h1>Data Quality Report</h1>
+            <p>Multi-user section editing system with data persistence</p>
         </div>
 
         <div id="statusMessage" class="status-message"></div>
 
         <div class="controls">
             <button id="toggleEditMode" class="btn btn-primary" onclick="toggleEditMode()">
-                🔓 Włącz tryb edycji
+                🔓 Enable Edit Mode
             </button>
             <button id="loadDataBtn" class="btn btn-warning" onclick="loadSavedData()">
-                📂 Wczytaj zapisane dane
+                📂 Load Saved Data
             </button>
             <button id="clearLocalStorageBtn" class="btn btn-danger" onclick="clearLocalStorageData()">
-                🗑️ Wyczyść LocalStorage
+                🗑️ Clear LocalStorage
             </button>
             <button id="completeBtn" class="btn btn-danger" onclick="markAsComplete()" style="display: none;">
-                ✅ Oznacz jako kompletny
+                ✅ Mark as Complete
             </button>
             <button id="generatePdfBtn" class="btn btn-success" onclick="generatePDF()">
-                📄 Generuj finalne PDF
+                📄 Generate PDF
             </button>
             <div id="modeIndicator" class="mode-indicator">
-                Tryb: PODGLĄD
+                Mode: VIEW
             </div>
         </div>
 
-        <!-- Sekcja 1: Podsumowanie Wykonawcze -->
-        <div class="section" data-section-id="executive-summary">
+        <!-- Section 1: Overall Assessment -->
+        <div class="section" data-section-id="overall-assessment">
             <div class="section-header">
-                <h2>1. Podsumowanie Wykonawcze</h2>
+                <h2>1. Overall Data Quality Assessment</h2>
                 <div class="section-meta">
-                    <span id="exec-author">Nie zapisano</span> | 
-                    <span id="exec-date">-</span>
+                    <span id="overall-author">Not saved</span> | 
+                    <span id="overall-date">-</span>
                 </div>
             </div>
             <div class="section-content">
                 <div class="field-group">
-                    <label class="field-label">Główne cele projektu:</label>
-                    <div class="field-value view-mode" id="exec-goals-view">
-                        [Wprowadź główne cele projektu]
+                    <label class="field-label">Overall Quality Score (0-100):</label>
+                    <div class="field-value view-mode" id="overall-score-view">
+                        [Enter overall quality score]
                     </div>
-                    <textarea class="field-input edit-mode" id="exec-goals" style="display: none;" 
-                        placeholder="Opisz główne cele projektu..."></textarea>
+                    <textarea class="field-input edit-mode" id="overall-score" style="display: none;" 
+                        placeholder="Enter quality score and brief explanation..."></textarea>
                 </div>
                 <div class="field-group">
-                    <label class="field-label">Kluczowe osiągnięcia:</label>
-                    <div class="field-value view-mode" id="exec-achievements-view">
-                        [Wprowadź kluczowe osiągnięcia]
+                    <label class="field-label">General Assessment:</label>
+                    <div class="field-value view-mode" id="overall-assessment-view">
+                        [Enter general assessment]
                     </div>
-                    <textarea class="field-input edit-mode" id="exec-achievements" style="display: none;"
-                        placeholder="Opisz kluczowe osiągnięcia..."></textarea>
+                    <textarea class="field-input edit-mode" id="overall-assessment" style="display: none;"
+                        placeholder="Provide overall assessment of data quality..."></textarea>
                 </div>
                 <div class="field-group">
-                    <label class="field-label">Wnioski i rekomendacje:</label>
-                    <div class="field-value view-mode" id="exec-conclusions-view">
-                        [Wprowadź wnioski i rekomendacje]
+                    <label class="field-label">Key Findings:</label>
+                    <div class="field-value view-mode" id="overall-findings-view">
+                        [Enter key findings]
                     </div>
-                    <textarea class="field-input edit-mode" id="exec-conclusions" style="display: none;"
-                        placeholder="Wprowadź wnioski i rekomendacje..."></textarea>
+                    <textarea class="field-input edit-mode" id="overall-findings" style="display: none;"
+                        placeholder="List the most important findings..."></textarea>
                 </div>
             </div>
             <div class="section-actions" style="display: none;">
-                <button class="btn btn-success" onclick="saveSection('executive-summary')">
-                    💾 Zapisz sekcję
+                <button class="btn btn-success" onclick="saveSection('overall-assessment')">
+                    💾 Save Section
                 </button>
             </div>
         </div>
 
-        <!-- Sekcja 2: Analiza Techniczna -->
-        <div class="section" data-section-id="technical-analysis">
+        <!-- Section 2: Completeness Analysis -->
+        <div class="section" data-section-id="completeness-analysis">
             <div class="section-header">
-                <h2>2. Analiza Techniczna</h2>
+                <h2>2. Data Completeness Analysis</h2>
                 <div class="section-meta">
-                    <span id="tech-author">Nie zapisano</span> | 
-                    <span id="tech-date">-</span>
+                    <span id="compl-author">Not saved</span> | 
+                    <span id="compl-date">-</span>
                 </div>
             </div>
             <div class="section-content">
                 <div class="field-group">
-                    <label class="field-label">Użyte technologie:</label>
-                    <div class="field-value view-mode" id="tech-technologies-view">
-                        [Wprowadź użyte technologie]
+                    <label class="field-label">Missing Data Percentage:</label>
+                    <div class="field-value view-mode" id="compl-missing-view">
+                        [Enter missing data statistics]
                     </div>
-                    <textarea class="field-input edit-mode" id="tech-technologies" style="display: none;"
-                        placeholder="Wymień użyte technologie..."></textarea>
+                    <textarea class="field-input edit-mode" id="compl-missing" style="display: none;"
+                        placeholder="Describe missing data patterns and percentages..."></textarea>
                 </div>
                 <div class="field-group">
-                    <label class="field-label">Architektura systemu:</label>
-                    <div class="field-value view-mode" id="tech-architecture-view">
-                        [Opisz architekturę systemu]
+                    <label class="field-label">Critical Fields Analysis:</label>
+                    <div class="field-value view-mode" id="compl-critical-view">
+                        [Analyze critical fields]
                     </div>
-                    <textarea class="field-input edit-mode" id="tech-architecture" style="display: none;"
-                        placeholder="Opisz architekturę systemu..."></textarea>
+                    <textarea class="field-input edit-mode" id="compl-critical" style="display: none;"
+                        placeholder="Analyze completeness of critical fields..."></textarea>
                 </div>
                 <div class="field-group">
-                    <label class="field-label">Wyzwania techniczne i rozwiązania:</label>
-                    <div class="field-value view-mode" id="tech-challenges-view">
-                        [Opisz wyzwania i rozwiązania]
+                    <label class="field-label">Recommendations:</label>
+                    <div class="field-value view-mode" id="compl-recommendations-view">
+                        [Enter recommendations]
                     </div>
-                    <textarea class="field-input edit-mode" id="tech-challenges" style="display: none;"
-                        placeholder="Opisz wyzwania techniczne i ich rozwiązania..."></textarea>
+                    <textarea class="field-input edit-mode" id="compl-recommendations" style="display: none;"
+                        placeholder="Provide recommendations to improve completeness..."></textarea>
                 </div>
             </div>
             <div class="section-actions" style="display: none;">
-                <button class="btn btn-success" onclick="saveSection('technical-analysis')">
-                    💾 Zapisz sekcję
+                <button class="btn btn-success" onclick="saveSection('completeness-analysis')">
+                    💾 Save Section
                 </button>
             </div>
         </div>
 
-        <!-- Sekcja 3: Analiza Finansowa -->
-        <div class="section" data-section-id="financial-analysis">
+        <!-- Section 3: Accuracy & Consistency -->
+        <div class="section" data-section-id="accuracy-consistency">
             <div class="section-header">
-                <h2>3. Analiza Finansowa</h2>
+                <h2>3. Data Accuracy & Consistency</h2>
                 <div class="section-meta">
-                    <span id="fin-author">Nie zapisano</span> | 
-                    <span id="fin-date">-</span>
+                    <span id="acc-author">Not saved</span> | 
+                    <span id="acc-date">-</span>
                 </div>
             </div>
             <div class="section-content">
                 <div class="field-group">
-                    <label class="field-label">Budżet projektu:</label>
-                    <div class="field-value view-mode" id="fin-budget-view">
-                        [Wprowadź informacje o budżecie]
+                    <label class="field-label">Data Accuracy Issues:</label>
+                    <div class="field-value view-mode" id="acc-issues-view">
+                        [Describe accuracy issues]
                     </div>
-                    <textarea class="field-input edit-mode" id="fin-budget" style="display: none;"
-                        placeholder="Opisz budżet projektu..."></textarea>
+                    <textarea class="field-input edit-mode" id="acc-issues" style="display: none;"
+                        placeholder="Describe identified accuracy issues..."></textarea>
                 </div>
                 <div class="field-group">
-                    <label class="field-label">Wydatki rzeczywiste:</label>
-                    <div class="field-value view-mode" id="fin-expenses-view">
-                        [Wprowadź rzeczywiste wydatki]
+                    <label class="field-label">Consistency Validation Results:</label>
+                    <div class="field-value view-mode" id="acc-consistency-view">
+                        [Enter consistency validation results]
                     </div>
-                    <textarea class="field-input edit-mode" id="fin-expenses" style="display: none;"
-                        placeholder="Opisz rzeczywiste wydatki..."></textarea>
+                    <textarea class="field-input edit-mode" id="acc-consistency" style="display: none;"
+                        placeholder="Report consistency check results across datasets..."></textarea>
                 </div>
                 <div class="field-group">
-                    <label class="field-label">Analiza ROI:</label>
-                    <div class="field-value view-mode" id="fin-roi-view">
-                        [Wprowadź analizę ROI]
+                    <label class="field-label">Anomalies Detected:</label>
+                    <div class="field-value view-mode" id="acc-anomalies-view">
+                        [List detected anomalies]
                     </div>
-                    <textarea class="field-input edit-mode" id="fin-roi" style="display: none;"
-                        placeholder="Wprowadź analizę ROI..."></textarea>
+                    <textarea class="field-input edit-mode" id="acc-anomalies" style="display: none;"
+                        placeholder="List and describe detected anomalies..."></textarea>
                 </div>
             </div>
             <div class="section-actions" style="display: none;">
-                <button class="btn btn-success" onclick="saveSection('financial-analysis')">
-                    💾 Zapisz sekcję
+                <button class="btn btn-success" onclick="saveSection('accuracy-consistency')">
+                    💾 Save Section
                 </button>
             </div>
         </div>
 
-        <!-- Sekcja 4: Podsumowanie i Dalsze Kroki -->
-        <div class="section" data-section-id="summary">
+        <!-- Section 4: Action Plan & Next Steps -->
+        <div class="section" data-section-id="action-plan">
             <div class="section-header">
-                <h2>4. Podsumowanie i Dalsze Kroki</h2>
+                <h2>4. Action Plan & Next Steps</h2>
                 <div class="section-meta">
-                    <span id="sum-author">Nie zapisano</span> | 
-                    <span id="sum-date">-</span>
+                    <span id="action-author">Not saved</span> | 
+                    <span id="action-date">-</span>
                 </div>
             </div>
             <div class="section-content">
                 <div class="field-group">
-                    <label class="field-label">Ogólne podsumowanie:</label>
-                    <div class="field-value view-mode" id="sum-summary-view">
-                        [Wprowadź ogólne podsumowanie]
+                    <label class="field-label">Priority Issues:</label>
+                    <div class="field-value view-mode" id="action-priority-view">
+                        [List priority issues]
                     </div>
-                    <textarea class="field-input edit-mode" id="sum-summary" style="display: none;"
-                        placeholder="Wprowadź ogólne podsumowanie..."></textarea>
+                    <textarea class="field-input edit-mode" id="action-priority" style="display: none;"
+                        placeholder="List issues by priority (High/Medium/Low)..."></textarea>
                 </div>
                 <div class="field-group">
-                    <label class="field-label">Dalsze kroki i rekomendacje:</label>
-                    <div class="field-value view-mode" id="sum-nextsteps-view">
-                        [Wprowadź dalsze kroki]
+                    <label class="field-label">Proposed Solutions:</label>
+                    <div class="field-value view-mode" id="action-solutions-view">
+                        [Describe proposed solutions]
                     </div>
-                    <textarea class="field-input edit-mode" id="sum-nextsteps" style="display: none;"
-                        placeholder="Opisz dalsze kroki i rekomendacje..."></textarea>
+                    <textarea class="field-input edit-mode" id="action-solutions" style="display: none;"
+                        placeholder="Describe proposed solutions for each issue..."></textarea>
+                </div>
+                <div class="field-group">
+                    <label class="field-label">Timeline & Responsibilities:</label>
+                    <div class="field-value view-mode" id="action-timeline-view">
+                        [Enter timeline and responsibilities]
+                    </div>
+                    <textarea class="field-input edit-mode" id="action-timeline" style="display: none;"
+                        placeholder="Define timeline and assign responsibilities..."></textarea>
                 </div>
             </div>
             <div class="section-actions" style="display: none;">
-                <button class="btn btn-success" onclick="saveSection('summary')">
-                    💾 Zapisz sekcję
+                <button class="btn btn-success" onclick="saveSection('action-plan')">
+                    💾 Save Section
                 </button>
             </div>
         </div>
 
-        <!-- Blok podpisów -->
+        <!-- Signature Block -->
         <div class="signature-block">
-            <h3 style="text-align: center; margin-bottom: 20px;">Podpisy i Zatwierdzenia</h3>
+            <h3 style="text-align: center; margin-bottom: 20px;">Approvals & Sign-offs</h3>
             <div class="signature-row">
                 <div class="signature-field">
                     <div class="signature-line">
-                        <strong>Kierownik Projektu</strong>
+                        <strong>Data Quality Manager</strong>
                     </div>
-                    <p>Data: _________________</p>
+                    <p>Date: _________________</p>
                 </div>
                 <div class="signature-field">
                     <div class="signature-line">
-                        <strong>Dyrektor Techniczny</strong>
+                        <strong>IT Director</strong>
                     </div>
-                    <p>Data: _________________</p>
+                    <p>Date: _________________</p>
                 </div>
                 <div class="signature-field">
                     <div class="signature-line">
-                        <strong>Dyrektor Finansowy</strong>
+                        <strong>Chief Data Officer</strong>
                     </div>
-                    <p>Data: _________________</p>
+                    <p>Date: _________________</p>
                 </div>
             </div>
         </div>
@@ -477,39 +479,49 @@
             const completeBtn = document.getElementById('completeBtn');
             
             if (editMode) {
-                indicator.textContent = 'Tryb: EDYCJA';
+                // EDIT MODE
+                indicator.textContent = 'Mode: EDIT';
                 indicator.classList.add('edit-mode');
-                toggleBtn.textContent = '🔒 Wyłącz tryb edycji';
+                toggleBtn.textContent = '🔒 Disable Edit Mode';
                 toggleBtn.classList.remove('btn-primary');
                 toggleBtn.classList.add('btn-warning');
                 completeBtn.style.display = 'inline-block';
                 
-                // Pokaż pola edycji, ukryj widok
+                // Pokaż wszystkie pola textarea (edycja)
                 document.querySelectorAll('.field-input').forEach(el => {
                     el.style.display = 'block';
                 });
+                
+                // Ukryj wszystkie widoki (read-only)
                 document.querySelectorAll('.field-value').forEach(el => {
                     el.style.display = 'none';
                 });
-                // Pokaż przyciski zapisywania
+                
+                // IMPORTANT: Show save buttons
                 document.querySelectorAll('.section-actions').forEach(el => {
                     el.style.display = 'block';
+                    console.log('Showing save button for section'); // DEBUG
                 });
+                
             } else {
-                indicator.textContent = 'Tryb: PODGLĄD';
+                // VIEW MODE
+                indicator.textContent = 'Mode: VIEW';
                 indicator.classList.remove('edit-mode');
-                toggleBtn.textContent = '🔓 Włącz tryb edycji';
+                toggleBtn.textContent = '🔓 Enable Edit Mode';
                 toggleBtn.classList.remove('btn-warning');
                 toggleBtn.classList.add('btn-primary');
                 completeBtn.style.display = 'none';
                 
-                // Pokaż widok, ukryj pola edycji
+                // Ukryj pola edycji
                 document.querySelectorAll('.field-input').forEach(el => {
                     el.style.display = 'none';
                 });
+                
+                // Pokaż widoki
                 document.querySelectorAll('.field-value').forEach(el => {
                     el.style.display = 'block';
                 });
+                
                 // Ukryj przyciski zapisywania
                 document.querySelectorAll('.section-actions').forEach(el => {
                     el.style.display = 'none';
@@ -524,7 +536,7 @@
             const data = {
                 sectionId: sectionId,
                 timestamp: new Date().toISOString(),
-                author: prompt('Wprowadź swoje imię i nazwisko:') || 'Anonimowy',
+                author: prompt('Enter your full name:') || 'Anonymous',
                 fields: {}
             };
 
@@ -562,17 +574,17 @@
                 authorEl.textContent = author;
             }
             if (dateEl) {
-                dateEl.textContent = date.toLocaleString('pl-PL');
+                dateEl.textContent = date.toLocaleString('en-US');
             }
         }
 
-        // Pobierz prefix sekcji
+        // Get section prefix
         function getSectionPrefix(sectionId) {
             const prefixes = {
-                'executive-summary': 'exec',
-                'technical-analysis': 'tech',
-                'financial-analysis': 'fin',
-                'summary': 'sum'
+                'overall-assessment': 'overall',
+                'completeness-analysis': 'compl',
+                'accuracy-consistency': 'acc',
+                'action-plan': 'action'
             };
             return prefixes[sectionId] || sectionId;
         }
@@ -647,37 +659,37 @@
             localStorage.setItem(`${DATA_FILE_PREFIX}_${sectionId}`, JSON.stringify(data));
         }
 
-        // Oznacz jako kompletny
+        // Mark as complete
         function markAsComplete() {
-            if (confirm('Czy na pewno chcesz oznaczyć raport jako kompletny? To zablokuje dalszą edycję.')) {
+            if (confirm('Are you sure you want to mark this report as complete? This will lock further editing.')) {
                 const completeData = {
                     completed: true,
                     completedAt: new Date().toISOString(),
-                    completedBy: prompt('Wprowadź swoje imię i nazwisko:') || 'Anonimowy'
+                    completedBy: prompt('Enter your full name:') || 'Anonymous'
                 };
                 
                 localStorage.setItem('report_complete', JSON.stringify(completeData));
                 downloadJSON(completeData, `report_complete_${Date.now()}.json`);
                 
-                showStatus('Raport oznaczony jako kompletny! Możesz teraz wygenerować PDF.', 'success');
+                showStatus('Report marked as complete! You can now generate the PDF.', 'success');
                 
-                // Wyłącz tryb edycji
+                // Disable edit mode
                 if (editMode) {
                     toggleEditMode();
                 }
             }
         }
 
-        // Generuj PDF
+        // Generate PDF
         function generatePDF() {
-            alert('Aby wygenerować PDF:\n\n1. Użyj opcji "Drukuj" w przeglądarce (Ctrl+P)\n2. Wybierz "Zapisz jako PDF"\n3. Lub użyj skryptu Python: python report_generator.py');
+            alert('To generate PDF:\n\n1. Use browser Print option (Ctrl+P)\n2. Select "Save as PDF"\n3. Or use Python script: python report_generator.py');
             window.print();
         }
 
-        // Wyczyść LocalStorage
+        // Clear LocalStorage
         function clearLocalStorageData() {
-            if (confirm('⚠️ Czy na pewno chcesz wyczyścić wszystkie dane z LocalStorage?\n\nTo usunie automatycznie zapisane dane w przeglądarce.\nPliki JSON w folderze saved_sections pozostaną bezpieczne.')) {
-                const sections = ['executive-summary', 'technical-analysis', 'financial-analysis', 'summary'];
+            if (confirm('⚠️ Are you sure you want to clear all data from LocalStorage?\n\nThis will remove automatically saved data from the browser.\nJSON files in saved_sections folder will remain safe.')) {
+                const sections = ['overall-assessment', 'completeness-analysis', 'accuracy-consistency', 'action-plan'];
                 let clearedCount = 0;
                 
                 sections.forEach(sectionId => {
@@ -688,27 +700,27 @@
                     }
                 });
                 
-                // Wyczyść też dane o kompletności
+                // Clear completion data
                 if (localStorage.getItem('report_complete')) {
                     localStorage.removeItem('report_complete');
                 }
                 
                 if (clearedCount > 0) {
-                    showStatus(`Wyczyszczono ${clearedCount} sekcji z LocalStorage!`, 'success');
+                    showStatus(`Cleared ${clearedCount} sections from LocalStorage!`, 'success');
                     
-                    // Odśwież widok - wyczyść pola
+                    // Refresh view - clear fields
                     document.querySelectorAll('.field-input').forEach(input => {
                         input.value = '';
                     });
                     document.querySelectorAll('.field-value').forEach(view => {
-                        view.textContent = view.textContent.match(/\[.*?\]/) ? view.textContent : '[Brak danych]';
+                        view.textContent = view.textContent.match(/\[.*?\]/) ? view.textContent : '[No data]';
                     });
                     
-                    // Wyczyść metadane
-                    ['exec', 'tech', 'fin', 'sum'].forEach(prefix => {
+                    // Clear metadata
+                    ['overall', 'compl', 'acc', 'action'].forEach(prefix => {
                         const authorEl = document.getElementById(prefix + '-author');
                         const dateEl = document.getElementById(prefix + '-date');
-                        if (authorEl) authorEl.textContent = 'Nie zapisano';
+                        if (authorEl) authorEl.textContent = 'Not saved';
                         if (dateEl) dateEl.textContent = '-';
                     });
                     
@@ -716,7 +728,7 @@
                         location.reload();
                     }, 1500);
                 } else {
-                    showStatus('LocalStorage jest już pusty.', 'success');
+                    showStatus('LocalStorage is already empty.', 'success');
                 }
             }
         }
@@ -732,9 +744,9 @@
             }, 5000);
         }
 
-        // Auto-wczytanie danych z localStorage przy starcie
+        // Auto-load data from localStorage on start
         window.onload = () => {
-            const sections = ['executive-summary', 'technical-analysis', 'financial-analysis', 'summary'];
+            const sections = ['overall-assessment', 'completeness-analysis', 'accuracy-consistency', 'action-plan'];
             sections.forEach(sectionId => {
                 const storageKey = `${DATA_FILE_PREFIX}_${sectionId}`;
                 const savedData = localStorage.getItem(storageKey);
@@ -743,7 +755,7 @@
                         const data = JSON.parse(savedData);
                         loadSectionData(data);
                     } catch (error) {
-                        console.error(`Błąd wczytywania sekcji ${sectionId}:`, error);
+                        console.error(`Error loading section ${sectionId}:`, error);
                     }
                 }
             });

@@ -1,6 +1,6 @@
-# HTML Report System with Multi-User Section Editing
+# Data Quality Report System with Multi-User Section Editing
 
-A flexible HTML-based reporting system that allows multiple users to edit different sections at different times, with automatic data persistence and PDF generation.
+A flexible HTML-based Data Quality reporting system that allows multiple users to edit different sections at different times, with automatic data persistence and PDF generation.
 
 ## 🌐 Live Demo
 
