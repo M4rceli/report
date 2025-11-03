@@ -2,6 +2,13 @@
 
 A flexible HTML-based reporting system that allows multiple users to edit different sections at different times, with automatic data persistence and PDF generation.
 
+## 🌐 Live Demo
+
+**Try it now (no installation needed):**  
+👉 **[https://M4rceli.github.io/report/report_template.html](https://M4rceli.github.io/report/report_template.html)**
+
+Open the link, click "Enable Edit Mode", and start editing!
+
 ## ✨ Features
 
 - 🔓 **Edit/View Mode Toggle** - Safe editing with mode switching

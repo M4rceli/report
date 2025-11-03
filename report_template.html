@@ -258,6 +258,9 @@
             <button id="loadDataBtn" class="btn btn-warning" onclick="loadSavedData()">
                 📂 Wczytaj zapisane dane
             </button>
+            <button id="clearLocalStorageBtn" class="btn btn-danger" onclick="clearLocalStorageData()">
+                🗑️ Wyczyść LocalStorage
+            </button>
             <button id="completeBtn" class="btn btn-danger" onclick="markAsComplete()" style="display: none;">
                 ✅ Oznacz jako kompletny
             </button>
@@ -668,6 +671,53 @@
         function generatePDF() {
             alert('Aby wygenerować PDF:\n\n1. Użyj opcji "Drukuj" w przeglądarce (Ctrl+P)\n2. Wybierz "Zapisz jako PDF"\n3. Lub użyj skryptu Python: python report_generator.py');
             window.print();
+        }
+
+        // Wyczyść LocalStorage
+        function clearLocalStorageData() {
+            if (confirm('⚠️ Czy na pewno chcesz wyczyścić wszystkie dane z LocalStorage?\n\nTo usunie automatycznie zapisane dane w przeglądarce.\nPliki JSON w folderze saved_sections pozostaną bezpieczne.')) {
+                const sections = ['executive-summary', 'technical-analysis', 'financial-analysis', 'summary'];
+                let clearedCount = 0;
+                
+                sections.forEach(sectionId => {
+                    const storageKey = `${DATA_FILE_PREFIX}_${sectionId}`;
+                    if (localStorage.getItem(storageKey)) {
+                        localStorage.removeItem(storageKey);
+                        clearedCount++;
+                    }
+                });
+                
+                // Wyczyść też dane o kompletności
+                if (localStorage.getItem('report_complete')) {
+                    localStorage.removeItem('report_complete');
+                }
+                
+                if (clearedCount > 0) {
+                    showStatus(`Wyczyszczono ${clearedCount} sekcji z LocalStorage!`, 'success');
+                    
+                    // Odśwież widok - wyczyść pola
+                    document.querySelectorAll('.field-input').forEach(input => {
+                        input.value = '';
+                    });
+                    document.querySelectorAll('.field-value').forEach(view => {
+                        view.textContent = view.textContent.match(/\[.*?\]/) ? view.textContent : '[Brak danych]';
+                    });
+                    
+                    // Wyczyść metadane
+                    ['exec', 'tech', 'fin', 'sum'].forEach(prefix => {
+                        const authorEl = document.getElementById(prefix + '-author');
+                        const dateEl = document.getElementById(prefix + '-date');
+                        if (authorEl) authorEl.textContent = 'Nie zapisano';
+                        if (dateEl) dateEl.textContent = '-';
+                    });
+                    
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1500);
+                } else {
+                    showStatus('LocalStorage jest już pusty.', 'success');
+                }
+            }
         }
 
         // Pokaż komunikat statusu

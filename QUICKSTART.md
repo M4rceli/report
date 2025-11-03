@@ -48,6 +48,40 @@ Then press **Ctrl+P** and choose "Save as PDF" in your browser.
 - **Auto-Save:** Your data is also saved in browser LocalStorage
 - **Watch Mode:** Run `python file_manager.py watch` to auto-move JSON files
 
+## 🧹 Clear LocalStorage (Reset Data)
+
+If you want to start fresh and clear all locally saved data:
+
+### Method 1: From the Browser Console
+1. Open report in browser
+2. Press **F12** to open Developer Tools
+3. Go to **Console** tab
+4. Type: `localStorage.clear()`
+5. Press **Enter**
+6. Refresh the page (**F5**)
+
+### Method 2: From Browser Settings
+**Chrome/Edge:**
+1. Press **F12** → **Application** tab
+2. Left sidebar → **Storage** → **Local Storage**
+3. Right-click on your site → **Clear**
+
+**Firefox:**
+1. Press **F12** → **Storage** tab
+2. Left sidebar → **Local Storage**
+3. Right-click → **Delete All**
+
+### Method 3: Clear Specific Section
+Open console (F12) and type:
+```javascript
+localStorage.removeItem('report_data_executive-summary');
+localStorage.removeItem('report_data_technical-analysis');
+localStorage.removeItem('report_data_financial-analysis');
+localStorage.removeItem('report_data_summary');
+```
+
+**Note:** Clearing LocalStorage only removes auto-saved browser data. Your JSON files in `saved_sections/` folder are safe!
+
 ## 🎬 Video Tutorial
 
 Coming soon! For now, follow the steps above - it's really that simple.
