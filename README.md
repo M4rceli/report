@@ -15,6 +15,19 @@ A flexible HTML-based reporting system that allows multiple users to edit differ
 
 ## 🚀 Quick Start
 
+### Option A: Google Colab (Cloud-Based) ☁️
+
+**Perfect for teams - no installation needed!**
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yourusername/html-report-system/blob/main/HTML_Report_System_Colab.ipynb)
+
+1. Click the badge above
+2. Run all cells (Runtime → Run all)
+3. Get a public URL to share with your team
+4. Edit, save, and generate PDFs - all in the cloud!
+
+### Option B: Local Installation 💻
+
 ### 1. Clone the Repository
 
 ```bash
