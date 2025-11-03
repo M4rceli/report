@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raport - System Edycji Sekcji</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 40px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            text-align: center;
+            border-bottom: 3px solid #2c3e50;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .controls {
+            background-color: #ecf0f1;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 5px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+
+        .btn-success {
+            background-color: #27ae60;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #229954;
+        }
+
+        .btn-danger {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+
+        .btn-warning {
+            background-color: #f39c12;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background-color: #e67e22;
+        }
+
+        .mode-indicator {
+            margin-left: auto;
+            padding: 10px 20px;
+            background-color: #95a5a6;
+            color: white;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .mode-indicator.edit-mode {
+            background-color: #e67e22;
+        }
+
+        .section {
+            margin-bottom: 40px;
+            border: 2px solid #ecf0f1;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .section-header {
+            background-color: #34495e;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-header h2 {
+            font-size: 20px;
+        }
+
+        .section-meta {
+            font-size: 12px;
+            color: #bdc3c7;
+        }
+
+        .section-content {
+            padding: 20px;
+        }
+
+        .field-group {
+            margin-bottom: 20px;
+        }
+
+        .field-label {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .field-value {
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            min-height: 50px;
+        }
+
+        .field-input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #bdc3c7;
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: inherit;
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .field-input:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .section-actions {
+            padding: 15px 20px;
+            background-color: #f8f9fa;
+            border-top: 1px solid #ecf0f1;
+            display: none;
+        }
+
+        .section-actions.edit-mode {
+            display: block;
+        }
+
+        .status-message {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            display: none;
+        }
+
+        .status-message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+
+        .status-message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+
+        .signature-block {
+            margin-top: 60px;
+            padding-top: 20px;
+            border-top: 2px solid #ecf0f1;
+        }
+
+        .signature-row {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 40px;
+        }
+
+        .signature-field {
+            text-align: center;
+            min-width: 200px;
+        }
+
+        .signature-line {
+            border-top: 2px solid #2c3e50;
+            margin-bottom: 5px;
+            padding-top: 5px;
+        }
+
+        @media print {
+            .controls, .section-actions, .btn {
+                display: none !important;
+            }
+
+            body {
+                background-color: white;
+                padding: 0;
+            }
+
+            .container {
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Raport Projektu</h1>
+            <p>System edycji sekcji z możliwością zapisu postępów</p>
+        </div>
+
+        <div id="statusMessage" class="status-message"></div>
+
+        <div class="controls">
+            <button id="toggleEditMode" class="btn btn-primary" onclick="toggleEditMode()">
+                🔓 Włącz tryb edycji
+            </button>
+            <button id="loadDataBtn" class="btn btn-warning" onclick="loadSavedData()">
+                📂 Wczytaj zapisane dane
+            </button>
+            <button id="completeBtn" class="btn btn-danger" onclick="markAsComplete()" style="display: none;">
+                ✅ Oznacz jako kompletny
+            </button>
+            <button id="generatePdfBtn" class="btn btn-success" onclick="generatePDF()">
+                📄 Generuj finalne PDF
+            </button>
+            <div id="modeIndicator" class="mode-indicator">
+                Tryb: PODGLĄD
+            </div>
+        </div>
+
+        <!-- Sekcja 1: Podsumowanie Wykonawcze -->
+        <div class="section" data-section-id="executive-summary">
+            <div class="section-header">
+                <h2>1. Podsumowanie Wykonawcze</h2>
+                <div class="section-meta">
+                    <span id="exec-author">Nie zapisano</span> | 
+                    <span id="exec-date">-</span>
+                </div>
+            </div>
+            <div class="section-content">
+                <div class="field-group">
+                    <label class="field-label">Główne cele projektu:</label>
+                    <div class="field-value view-mode" id="exec-goals-view">
+                        [Wprowadź główne cele projektu]
+                    </div>
+                    <textarea class="field-input edit-mode" id="exec-goals" style="display: none;" 
+                        placeholder="Opisz główne cele projektu..."></textarea>
+                </div>
+                <div class="field-group">
+                    <label class="field-label">Kluczowe osiągnięcia:</label>
+                    <div class="field-value view-mode" id="exec-achievements-view">
+                        [Wprowadź kluczowe osiągnięcia]
+                    </div>
+                    <textarea class="field-input edit-mode" id="exec-achievements" style="display: none;"
+                        placeholder="Opisz kluczowe osiągnięcia..."></textarea>
+                </div>
+                <div class="field-group">
+                    <label class="field-label">Wnioski i rekomendacje:</label>
+                    <div class="field-value view-mode" id="exec-conclusions-view">
+                        [Wprowadź wnioski i rekomendacje]
+                    </div>
+                    <textarea class="field-input edit-mode" id="exec-conclusions" style="display: none;"
+                        placeholder="Wprowadź wnioski i rekomendacje..."></textarea>
+                </div>
+            </div>
+            <div class="section-actions">
+                <button class="btn btn-success" onclick="saveSection('executive-summary')">
+                    💾 Zapisz sekcję
+                </button>
+            </div>
+        </div>
+
+        <!-- Sekcja 2: Analiza Techniczna -->
+        <div class="section" data-section-id="technical-analysis">
+            <div class="section-header">
+                <h2>2. Analiza Techniczna</h2>
+                <div class="section-meta">
+                    <span id="tech-author">Nie zapisano</span> | 
+                    <span id="tech-date">-</span>
+                </div>
+            </div>
+            <div class="section-content">
+                <div class="field-group">
+                    <label class="field-label">Użyte technologie:</label>
+                    <div class="field-value view-mode" id="tech-technologies-view">
+                        [Wprowadź użyte technologie]
+                    </div>
+                    <textarea class="field-input edit-mode" id="tech-technologies" style="display: none;"
+                        placeholder="Wymień użyte technologie..."></textarea>
+                </div>
+                <div class="field-group">
+                    <label class="field-label">Architektura systemu:</label>
+                    <div class="field-value view-mode" id="tech-architecture-view">
+                        [Opisz architekturę systemu]
+                    </div>
+                    <textarea class="field-input edit-mode" id="tech-architecture" style="display: none;"
+                        placeholder="Opisz architekturę systemu..."></textarea>
+                </div>
+                <div class="field-group">
+                    <label class="field-label">Wyzwania techniczne i rozwiązania:</label>
+                    <div class="field-value view-mode" id="tech-challenges-view">
+                        [Opisz wyzwania i rozwiązania]
+                    </div>
+                    <textarea class="field-input edit-mode" id="tech-challenges" style="display: none;"
+                        placeholder="Opisz wyzwania techniczne i ich rozwiązania..."></textarea>
+                </div>
+            </div>
+            <div class="section-actions">
+                <button class="btn btn-success" onclick="saveSection('technical-analysis')">
+                    💾 Zapisz sekcję
+                </button>
+            </div>
+        </div>
+
+        <!-- Sekcja 3: Analiza Finansowa -->
+        <div class="section" data-section-id="financial-analysis">
+            <div class="section-header">
+                <h2>3. Analiza Finansowa</h2>
+                <div class="section-meta">
+                    <span id="fin-author">Nie zapisano</span> | 
+                    <span id="fin-date">-</span>
+                </div>
+            </div>
+            <div class="section-content">
+                <div class="field-group">
+                    <label class="field-label">Budżet projektu:</label>
+                    <div class="field-value view-mode" id="fin-budget-view">
+                        [Wprowadź informacje o budżecie]
+                    </div>
+                    <textarea class="field-input edit-mode" id="fin-budget" style="display: none;"
+                        placeholder="Opisz budżet projektu..."></textarea>
+                </div>
+                <div class="field-group">
+                    <label class="field-label">Wydatki rzeczywiste:</label>
+                    <div class="field-value view-mode" id="fin-expenses-view">
+                        [Wprowadź rzeczywiste wydatki]
+                    </div>
+                    <textarea class="field-input edit-mode" id="fin-expenses" style="display: none;"
+                        placeholder="Opisz rzeczywiste wydatki..."></textarea>
+                </div>
+                <div class="field-group">
+                    <label class="field-label">Analiza ROI:</label>
+                    <div class="field-value view-mode" id="fin-roi-view">
+                        [Wprowadź analizę ROI]
+                    </div>
+                    <textarea class="field-input edit-mode" id="fin-roi" style="display: none;"
+                        placeholder="Wprowadź analizę ROI..."></textarea>
+                </div>
+            </div>
+            <div class="section-actions">
+                <button class="btn btn-success" onclick="saveSection('financial-analysis')">
+                    💾 Zapisz sekcję
+                </button>
+            </div>
+        </div>
+
+        <!-- Sekcja 4: Podsumowanie i Dalsze Kroki -->
+        <div class="section" data-section-id="summary">
+            <div class="section-header">
+                <h2>4. Podsumowanie i Dalsze Kroki</h2>
+                <div class="section-meta">
+                    <span id="sum-author">Nie zapisano</span> | 
+                    <span id="sum-date">-</span>
+                </div>
+            </div>
+            <div class="section-content">
+                <div class="field-group">
+                    <label class="field-label">Ogólne podsumowanie:</label>
+                    <div class="field-value view-mode" id="sum-summary-view">
+                        [Wprowadź ogólne podsumowanie]
+                    </div>
+                    <textarea class="field-input edit-mode" id="sum-summary" style="display: none;"
+                        placeholder="Wprowadź ogólne podsumowanie..."></textarea>
+                </div>
+                <div class="field-group">
+                    <label class="field-label">Dalsze kroki i rekomendacje:</label>
+                    <div class="field-value view-mode" id="sum-nextsteps-view">
+                        [Wprowadź dalsze kroki]
+                    </div>
+                    <textarea class="field-input edit-mode" id="sum-nextsteps" style="display: none;"
+                        placeholder="Opisz dalsze kroki i rekomendacje..."></textarea>
+                </div>
+            </div>
+            <div class="section-actions">
+                <button class="btn btn-success" onclick="saveSection('summary')">
+                    💾 Zapisz sekcję
+                </button>
+            </div>
+        </div>
+
+        <!-- Blok podpisów -->
+        <div class="signature-block">
+            <h3 style="text-align: center; margin-bottom: 20px;">Podpisy i Zatwierdzenia</h3>
+            <div class="signature-row">
+                <div class="signature-field">
+                    <div class="signature-line">
+                        <strong>Kierownik Projektu</strong>
+                    </div>
+                    <p>Data: _________________</p>
+                </div>
+                <div class="signature-field">
+                    <div class="signature-line">
+                        <strong>Dyrektor Techniczny</strong>
+                    </div>
+                    <p>Data: _________________</p>
+                </div>
+                <div class="signature-field">
+                    <div class="signature-line">
+                        <strong>Dyrektor Finansowy</strong>
+                    </div>
+                    <p>Data: _________________</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let editMode = false;
+        const DATA_FILE_PREFIX = 'report_data';
+
+        // Przełączanie trybu edycji
+        function toggleEditMode() {
+            editMode = !editMode;
+            const indicator = document.getElementById('modeIndicator');
+            const toggleBtn = document.getElementById('toggleEditMode');
+            const completeBtn = document.getElementById('completeBtn');
+            
+            if (editMode) {
+                indicator.textContent = 'Tryb: EDYCJA';
+                indicator.classList.add('edit-mode');
+                toggleBtn.textContent = '🔒 Wyłącz tryb edycji';
+                toggleBtn.classList.remove('btn-primary');
+                toggleBtn.classList.add('btn-warning');
+                completeBtn.style.display = 'inline-block';
+                
+                // Pokaż pola edycji, ukryj widok
+                document.querySelectorAll('.edit-mode').forEach(el => {
+                    if (el.tagName === 'TEXTAREA' || el.tagName === 'INPUT') {
+                        el.style.display = 'block';
+                    } else {
+                        el.style.display = 'block';
+                    }
+                });
+                document.querySelectorAll('.view-mode').forEach(el => {
+                    el.style.display = 'none';
+                });
+                document.querySelectorAll('.section-actions').forEach(el => {
+                    el.classList.add('edit-mode');
+                });
+            } else {
+                indicator.textContent = 'Tryb: PODGLĄD';
+                indicator.classList.remove('edit-mode');
+                toggleBtn.textContent = '🔓 Włącz tryb edycji';
+                toggleBtn.classList.remove('btn-warning');
+                toggleBtn.classList.add('btn-primary');
+                completeBtn.style.display = 'none';
+                
+                // Pokaż widok, ukryj pola edycji
+                document.querySelectorAll('.edit-mode').forEach(el => {
+                    if (el.tagName === 'TEXTAREA' || el.tagName === 'INPUT') {
+                        el.style.display = 'none';
+                    } else {
+                        el.style.display = 'none';
+                    }
+                });
+                document.querySelectorAll('.view-mode').forEach(el => {
+                    el.style.display = 'block';
+                });
+                document.querySelectorAll('.section-actions').forEach(el => {
+                    el.classList.remove('edit-mode');
+                });
+            }
+        }
+
+        // Zapisywanie sekcji
+        function saveSection(sectionId) {
+            const section = document.querySelector(`[data-section-id="${sectionId}"]`);
+            const inputs = section.querySelectorAll('.field-input');
+            const data = {
+                sectionId: sectionId,
+                timestamp: new Date().toISOString(),
+                author: prompt('Wprowadź swoje imię i nazwisko:') || 'Anonimowy',
+                fields: {}
+            };
+
+            inputs.forEach(input => {
+                const fieldId = input.id;
+                const fieldValue = input.value;
+                data.fields[fieldId] = fieldValue;
+                
+                // Zaktualizuj widok
+                const viewElement = document.getElementById(fieldId + '-view');
+                if (viewElement) {
+                    viewElement.textContent = fieldValue || '[Brak danych]';
+                }
+            });
+
+            // Zapisz do localStorage (w prawdziwej aplikacji byłoby to API call)
+            const storageKey = `${DATA_FILE_PREFIX}_${sectionId}`;
+            localStorage.setItem(storageKey, JSON.stringify(data));
+
+            // Zaktualizuj metadane sekcji
+            updateSectionMeta(sectionId, data.author, new Date(data.timestamp));
+
+            // Wygeneruj plik JSON do pobrania
+            downloadJSON(data, `${sectionId}_${Date.now()}.json`);
+
+            showStatus(`Sekcja "${sectionId}" została zapisana pomyślnie!`, 'success');
+        }
+
+        // Aktualizacja metadanych sekcji
+        function updateSectionMeta(sectionId, author, date) {
+            const authorEl = document.getElementById(getSectionPrefix(sectionId) + '-author');
+            const dateEl = document.getElementById(getSectionPrefix(sectionId) + '-date');
+            
+            if (authorEl) {
+                authorEl.textContent = author;
+            }
+            if (dateEl) {
+                dateEl.textContent = date.toLocaleString('pl-PL');
+            }
+        }
+
+        // Pobierz prefix sekcji
+        function getSectionPrefix(sectionId) {
+            const prefixes = {
+                'executive-summary': 'exec',
+                'technical-analysis': 'tech',
+                'financial-analysis': 'fin',
+                'summary': 'sum'
+            };
+            return prefixes[sectionId] || sectionId;
+        }
+
+        // Pobierz plik JSON
+        function downloadJSON(data, filename) {
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // Wczytaj zapisane dane
+        function loadSavedData() {
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = '.json';
+            fileInput.multiple = true;
+            
+            fileInput.onchange = (e) => {
+                const files = e.target.files;
+                let loadedCount = 0;
+                
+                Array.from(files).forEach(file => {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        try {
+                            const data = JSON.parse(event.target.result);
+                            loadSectionData(data);
+                            loadedCount++;
+                            
+                            if (loadedCount === files.length) {
+                                showStatus(`Wczytano ${loadedCount} sekcji pomyślnie!`, 'success');
+                            }
+                        } catch (error) {
+                            showStatus(`Błąd wczytywania pliku: ${file.name}`, 'error');
+                        }
+                    };
+                    reader.readAsText(file);
+                });
+            };
+            
+            fileInput.click();
+        }
+
+        // Załaduj dane sekcji
+        function loadSectionData(data) {
+            const { sectionId, author, timestamp, fields } = data;
+            
+            // Załaduj pola
+            Object.keys(fields).forEach(fieldId => {
+                const input = document.getElementById(fieldId);
+                const view = document.getElementById(fieldId + '-view');
+                
+                if (input) {
+                    input.value = fields[fieldId];
+                }
+                if (view) {
+                    view.textContent = fields[fieldId] || '[Brak danych]';
+                }
+            });
+
+            // Zaktualizuj metadane
+            updateSectionMeta(sectionId, author, new Date(timestamp));
+
+            // Zapisz do localStorage
+            localStorage.setItem(`${DATA_FILE_PREFIX}_${sectionId}`, JSON.stringify(data));
+        }
+
+        // Oznacz jako kompletny
+        function markAsComplete() {
+            if (confirm('Czy na pewno chcesz oznaczyć raport jako kompletny? To zablokuje dalszą edycję.')) {
+                const completeData = {
+                    completed: true,
+                    completedAt: new Date().toISOString(),
+                    completedBy: prompt('Wprowadź swoje imię i nazwisko:') || 'Anonimowy'
+                };
+                
+                localStorage.setItem('report_complete', JSON.stringify(completeData));
+                downloadJSON(completeData, `report_complete_${Date.now()}.json`);
+                
+                showStatus('Raport oznaczony jako kompletny! Możesz teraz wygenerować PDF.', 'success');
+                
+                // Wyłącz tryb edycji
+                if (editMode) {
+                    toggleEditMode();
+                }
+            }
+        }
+
+        // Generuj PDF
+        function generatePDF() {
+            alert('Aby wygenerować PDF:\n\n1. Użyj opcji "Drukuj" w przeglądarce (Ctrl+P)\n2. Wybierz "Zapisz jako PDF"\n3. Lub użyj skryptu Python: python report_generator.py');
+            window.print();
+        }
+
+        // Pokaż komunikat statusu
+        function showStatus(message, type) {
+            const statusEl = document.getElementById('statusMessage');
+            statusEl.textContent = message;
+            statusEl.className = `status-message ${type}`;
+            
+            setTimeout(() => {
+                statusEl.className = 'status-message';
+            }, 5000);
+        }
+
+        // Auto-wczytanie danych z localStorage przy starcie
+        window.onload = () => {
+            const sections = ['executive-summary', 'technical-analysis', 'financial-analysis', 'summary'];
+            sections.forEach(sectionId => {
+                const storageKey = `${DATA_FILE_PREFIX}_${sectionId}`;
+                const savedData = localStorage.getItem(storageKey);
+                if (savedData) {
+                    try {
+                        const data = JSON.parse(savedData);
+                        loadSectionData(data);
+                    } catch (error) {
+                        console.error(`Błąd wczytywania sekcji ${sectionId}:`, error);
+                    }
+                }
+            });
+        };
+    </script>
+</body>
+</html>

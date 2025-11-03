@@ -1,0 +1,48 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Report specific
+saved_sections/*.json
+generated_pdfs/*.pdf
+report_filled.html
+temp_report.html
+
+# Keep folder structure but ignore contents
+!saved_sections/.gitkeep
+!generated_pdfs/.gitkeep
+
+# Logs
+*.log
+
+# OS
+Thumbs.db

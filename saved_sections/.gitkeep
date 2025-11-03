@@ -1,0 +1,3 @@
+# This folder contains saved section data as JSON files
+# Each section save creates a timestamped JSON file
+# Example: executive-summary_1234567890.json

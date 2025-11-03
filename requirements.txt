@@ -1,0 +1,20 @@
+# Opcje instalacji bibliotek PDF dla systemu raportowania
+
+# OPCJA 1: Bez żadnych bibliotek (ZALECANE - najłatwiejsze)
+# Nie instaluj nic - używaj przeglądarki do generowania PDF
+# Skrypt automatycznie otworzy raport w przeglądarce
+# Użyj Ctrl+P -> "Zapisz jako PDF"
+
+# OPCJA 2: WeasyPrint (najlepsza jakość, ale wymaga dodatkowych zależności)
+# weasyprint>=60.0
+
+# OPCJA 3: Playwright (bardzo dobra jakość, automatyczne)
+# playwright>=1.40.0
+# Po instalacji uruchom: playwright install chromium
+
+# OPCJA 4: pdfkit (wymaga wkhtmltopdf zainstalowanego w systemie)
+# pdfkit>=1.0.0
+# Musisz także zainstalować wkhtmltopdf: https://wkhtmltopdf.org/downloads.html
+
+# UWAGA: System działa BEZ żadnych bibliotek PDF!
+# Używaj metody przeglądarki - najprostsza i zawsze działa
