@@ -33,13 +33,14 @@ class FileManager:
     
     def find_json_files_in_downloads(self):
         """Find report JSON files in Downloads folder"""
-        # Section patterns
+        # Section patterns (individual sections)
         patterns = [
             'overall-assessment_*.json',
             'completeness-analysis_*.json',
             'accuracy-consistency_*.json',
             'action-plan_*.json',
-            'report_complete_*.json'
+            'report_complete_*.json',
+            'data_quality_report_full_*.json'  # Full reports
         ]
         
         found_files = []

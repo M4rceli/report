@@ -55,20 +55,40 @@ class ReportGenerator:
     
     def load_section_data(self, section_id):
         """Load section data from JSON file"""
+        # Try to find single section files
         json_files = list(self.data_folder.glob(f"{section_id}_*.json"))
         
-        if not json_files:
+        # Also try to find full report files
+        full_report_files = list(self.data_folder.glob("data_quality_report_full_*.json"))
+        
+        if not json_files and not full_report_files:
             print(f"⚠️  No data found for section: {section_id}")
             return None
         
-        # Get the newest file
-        latest_file = max(json_files, key=lambda p: p.stat().st_mtime)
+        # First try single section files
+        if json_files:
+            latest_file = max(json_files, key=lambda p: p.stat().st_mtime)
+            
+            with open(latest_file, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+            
+            print(f"✅ Loaded section data: {section_id} from {latest_file.name}")
+            return data
         
-        with open(latest_file, 'r', encoding='utf-8') as f:
-            data = json.load(f)
+        # If no single section file, try to extract from full report
+        if full_report_files:
+            latest_file = max(full_report_files, key=lambda p: p.stat().st_mtime)
+            
+            with open(latest_file, 'r', encoding='utf-8') as f:
+                full_data = json.load(f)
+            
+            # Check if it has sections key
+            if 'sections' in full_data and section_id in full_data['sections']:
+                print(f"✅ Loaded section data: {section_id} from full report {latest_file.name}")
+                return full_data['sections'][section_id]
         
-        print(f"✅ Loaded section data: {section_id} from {latest_file.name}")
-        return data
+        print(f"⚠️  No data found for section: {section_id}")
+        return None
     
     def inject_data_into_html(self, html_path):
         """Load HTML and inject data from JSON"""
@@ -264,35 +284,62 @@ class ReportGenerator:
             print("⚠️  No saved sections found")
             return
         
-        # Group by section_id
-        sections_data = {}
+        # Separate full reports from individual sections
+        full_reports = []
+        individual_sections = {}
+        
         for json_file in json_files:
             with open(json_file, 'r', encoding='utf-8') as f:
                 data = json.load(f)
-                section_id = data.get('sectionId', 'unknown')
                 
-                if section_id not in sections_data:
-                    sections_data[section_id] = []
-                
-                sections_data[section_id].append({
-                    'file': json_file.name,
-                    'author': data.get('author', 'Unknown'),
-                    'timestamp': data.get('timestamp', ''),
-                    'modified': datetime.fromtimestamp(json_file.stat().st_mtime)
-                })
+                # Check if it's a full report
+                if 'sections' in data:
+                    full_reports.append({
+                        'file': json_file.name,
+                        'author': data.get('author', 'Unknown'),
+                        'savedAt': data.get('savedAt', ''),
+                        'modified': datetime.fromtimestamp(json_file.stat().st_mtime),
+                        'section_count': len(data.get('sections', {}))
+                    })
+                else:
+                    # Individual section
+                    section_id = data.get('sectionId', 'unknown')
+                    
+                    if section_id not in individual_sections:
+                        individual_sections[section_id] = []
+                    
+                    individual_sections[section_id].append({
+                        'file': json_file.name,
+                        'author': data.get('author', 'Unknown'),
+                        'timestamp': data.get('timestamp', ''),
+                        'modified': datetime.fromtimestamp(json_file.stat().st_mtime)
+                    })
         
-        # Display
-        for section_id, files in sections_data.items():
-            print(f"\n📌 {section_id}:")
-            # Sort by modification date
-            files.sort(key=lambda x: x['modified'], reverse=True)
-            
-            for i, file_data in enumerate(files):
-                prefix = "  └─" if i == len(files) - 1 else "  ├─"
+        # Display full reports first
+        if full_reports:
+            print("\n📦 Full Reports:")
+            full_reports.sort(key=lambda x: x['modified'], reverse=True)
+            for i, report in enumerate(full_reports):
+                prefix = "  └─" if i == len(full_reports) - 1 else "  ├─"
                 newest = " [LATEST]" if i == 0 else ""
-                print(f"{prefix} {file_data['file']}{newest}")
-                print(f"     Author: {file_data['author']}")
-                print(f"     Date: {file_data['modified'].strftime('%Y-%m-%d %H:%M:%S')}")
+                print(f"{prefix} {report['file']}{newest}")
+                print(f"     Author: {report['author']}")
+                print(f"     Sections: {report['section_count']}")
+                print(f"     Date: {report['modified'].strftime('%Y-%m-%d %H:%M:%S')}")
+        
+        # Display individual sections
+        if individual_sections:
+            print("\n📄 Individual Sections:")
+            for section_id, files in individual_sections.items():
+                print(f"\n📌 {section_id}:")
+                files.sort(key=lambda x: x['modified'], reverse=True)
+                
+                for i, file_data in enumerate(files):
+                    prefix = "  └─" if i == len(files) - 1 else "  ├─"
+                    newest = " [LATEST]" if i == 0 else ""
+                    print(f"{prefix} {file_data['file']}{newest}")
+                    print(f"     Author: {file_data['author']}")
+                    print(f"     Date: {file_data['modified'].strftime('%Y-%m-%d %H:%M:%S')}")
 
 
 def main():

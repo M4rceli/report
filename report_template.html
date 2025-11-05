@@ -655,14 +655,25 @@
                     reader.onload = (event) => {
                         try {
                             const data = JSON.parse(event.target.result);
-                            loadSectionData(data);
-                            loadedCount++;
                             
-                            if (loadedCount === files.length) {
+                            // Check if it's a full report (with sections key) or single section
+                            if (data.sections) {
+                                // Full report - load all sections
+                                Object.keys(data.sections).forEach(sectionId => {
+                                    loadSectionData(data.sections[sectionId]);
+                                    loadedCount++;
+                                });
+                            } else if (data.sectionId) {
+                                // Single section
+                                loadSectionData(data);
+                                loadedCount++;
+                            }
+                            
+                            if (loadedCount > 0) {
                                 showStatus(`Loaded ${loadedCount} sections successfully!`, 'success');
                             }
                         } catch (error) {
-                            showStatus(`Error loading file: ${file.name}`, 'error');
+                            showStatus(`Error loading file: ${file.name} - ${error.message}`, 'error');
                         }
                     };
                     reader.readAsText(file);
