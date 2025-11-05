@@ -1,212 +1,202 @@
 #!/usr/bin/env python3
 """
-Pomocnik zarządzania plikami JSON - System raportowania
-Automatycznie przenosi pliki JSON z Downloads do saved_sections
+File Manager - Reporting System
+Helper script for managing JSON files (auto-move from Downloads, list sections, etc.)
 """
 
 import os
+import sys
+import time
 import shutil
 from pathlib import Path
 from datetime import datetime
 
+# Colors for terminal output (ANSI)
+class Colors:
+    HEADER = '\033[95m'
+    BLUE = '\033[94m'
+    GREEN = '\033[92m'
+    YELLOW = '\033[93m'
+    RED = '\033[91m'
+    END = '\033[0m'
+    BOLD = '\033[1m'
+
 
 class FileManager:
-    def __init__(self, report_folder="c:/repos/report"):
-        self.report_folder = Path(report_folder)
-        self.saved_sections = self.report_folder / "saved_sections"
+    def __init__(self, project_folder="c:/repos/report"):
+        self.project_folder = Path(project_folder)
+        self.saved_sections = self.project_folder / "saved_sections"
         self.downloads_folder = Path.home() / "Downloads"
         
-        # Utwórz folder jeśli nie istnieje
+        # Create folders if they don't exist
         self.saved_sections.mkdir(exist_ok=True)
     
-    def find_report_json_files(self, source_folder=None):
-        """Znajdź pliki JSON raportu w folderze"""
-        if source_folder is None:
-            source_folder = self.downloads_folder
-        
-        # Wzorce nazw sekcji
-        section_patterns = [
-            'executive-summary_*.json',
-            'technical-analysis_*.json',
-            'financial-analysis_*.json',
-            'summary_*.json',
+    def find_json_files_in_downloads(self):
+        """Find report JSON files in Downloads folder"""
+        # Section patterns
+        patterns = [
+            'overall-assessment_*.json',
+            'completeness-analysis_*.json',
+            'accuracy-consistency_*.json',
+            'action-plan_*.json',
             'report_complete_*.json'
         ]
         
         found_files = []
-        for pattern in section_patterns:
-            found_files.extend(source_folder.glob(pattern))
+        for pattern in patterns:
+            files = list(self.downloads_folder.glob(pattern))
+            found_files.extend(files)
         
         return found_files
     
-    def move_files_to_saved_sections(self):
-        """Przenieś pliki JSON z Downloads do saved_sections"""
-        print("\n🔍 Szukam plików JSON raportu w Downloads...")
-        print("=" * 60)
+    def move_files_from_downloads(self):
+        """Move JSON files from Downloads to saved_sections"""
+        print(f"\n{Colors.BLUE}🔍 Searching for files in Downloads...{Colors.END}")
         
-        json_files = self.find_report_json_files()
+        files = self.find_json_files_in_downloads()
         
-        if not json_files:
-            print("⚠️  Nie znaleziono plików JSON raportu w Downloads")
-            print(f"📁 Szukano w: {self.downloads_folder}")
+        if not files:
+            print(f"{Colors.YELLOW}⚠️  No report files found in Downloads{Colors.END}")
             return 0
         
-        print(f"✅ Znaleziono {len(json_files)} plik(ów):\n")
+        print(f"\n{Colors.GREEN}✅ Found {len(files)} files:{Colors.END}")
+        for file in files:
+            print(f"  📄 {file.name}")
         
+        # Confirmation
+        confirm = input(f"\n{Colors.BOLD}Move these files? (y/n): {Colors.END}").strip().lower()
+        
+        if confirm != 'y':
+            print(f"{Colors.YELLOW}❌ Operation cancelled{Colors.END}")
+            return 0
+        
+        # Move files
         moved_count = 0
-        for json_file in json_files:
+        for file in files:
             try:
-                destination = self.saved_sections / json_file.name
+                dest = self.saved_sections / file.name
                 
-                # Sprawdź czy plik już istnieje
-                if destination.exists():
-                    print(f"⚠️  Plik już istnieje: {json_file.name}")
-                    overwrite = input("   Nadpisać? (t/n): ").lower().strip()
-                    if overwrite != 't':
-                        print("   Pominięto.\n")
-                        continue
+                # If file exists, add timestamp
+                if dest.exists():
+                    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+                    base_name = dest.stem
+                    dest = self.saved_sections / f"{base_name}_{timestamp}.json"
                 
-                # Przenieś plik
-                shutil.move(str(json_file), str(destination))
-                print(f"✅ Przeniesiono: {json_file.name}")
-                print(f"   Do: {destination}\n")
+                shutil.move(str(file), str(dest))
+                print(f"  {Colors.GREEN}✅ Moved:{Colors.END} {file.name} → {dest.name}")
                 moved_count += 1
-                
             except Exception as e:
-                print(f"❌ Błąd przenoszenia {json_file.name}: {e}\n")
+                print(f"  {Colors.RED}❌ Error:{Colors.END} {file.name} - {e}")
         
-        if moved_count > 0:
-            print("=" * 60)
-            print(f"🎉 Przeniesiono {moved_count} plik(ów) pomyślnie!")
-            print(f"📁 Lokalizacja: {self.saved_sections}")
-        
+        print(f"\n{Colors.GREEN}✅ Successfully moved {moved_count} files!{Colors.END}")
         return moved_count
     
     def list_saved_sections(self):
-        """Wyświetl listę zapisanych sekcji"""
-        print("\n📋 Pliki w folderze saved_sections:")
+        """Display list of saved sections"""
+        print(f"\n{Colors.BLUE}📋 Saved Sections:{Colors.END}")
         print("=" * 60)
         
         json_files = list(self.saved_sections.glob("*.json"))
         
         if not json_files:
-            print("⚠️  Folder pusty")
-            print(f"📁 Lokalizacja: {self.saved_sections}")
+            print(f"{Colors.YELLOW}⚠️  No saved sections found{Colors.END}")
             return
         
-        json_files.sort(key=lambda p: p.stat().st_mtime, reverse=True)
+        # Sort by modification date
+        json_files.sort(key=lambda x: x.stat().st_mtime, reverse=True)
         
-        for i, json_file in enumerate(json_files, 1):
-            modified = datetime.fromtimestamp(json_file.stat().st_mtime)
-            size = json_file.stat().st_size
+        print(f"\n{Colors.GREEN}Found {len(json_files)} files:{Colors.END}\n")
+        
+        for file in json_files:
+            modified = datetime.fromtimestamp(file.stat().st_mtime)
+            size_kb = file.stat().st_size / 1024
             
-            print(f"{i}. {json_file.name}")
-            print(f"   Data: {modified.strftime('%Y-%m-%d %H:%M:%S')}")
-            print(f"   Rozmiar: {size} bajtów\n")
-        
-        print("=" * 60)
-        print(f"Razem: {len(json_files)} plik(ów)")
+            print(f"  📄 {Colors.BOLD}{file.name}{Colors.END}")
+            print(f"     Modified: {modified.strftime('%Y-%m-%d %H:%M:%S')}")
+            print(f"     Size: {size_kb:.1f} KB")
+            print()
     
-    def open_folders(self):
-        """Otwórz foldery w eksploratorze"""
-        print("\n📂 Otwieranie folderów...")
+    def watch_downloads(self, interval=5):
+        """Watch Downloads folder for new files and auto-move"""
+        print(f"\n{Colors.BLUE}👀 Watching Downloads folder...{Colors.END}")
+        print(f"   Interval: {interval} seconds")
+        print(f"   Press Ctrl+C to stop\n")
         
-        try:
-            # Otwórz saved_sections
-            os.startfile(str(self.saved_sections))
-            print(f"✅ Otwarto: {self.saved_sections}")
-            
-            # Otwórz Downloads
-            os.startfile(str(self.downloads_folder))
-            print(f"✅ Otwarto: {self.downloads_folder}")
-            
-        except Exception as e:
-            print(f"❌ Błąd: {e}")
-    
-    def auto_move_on_watch(self):
-        """Automatycznie przenoś nowe pliki (tryb obserwacji)"""
-        print("\n👁️  Tryb obserwacji - monitoruję folder Downloads...")
-        print("Naciśnij Ctrl+C aby zatrzymać\n")
-        
-        import time
-        processed_files = set()
+        seen_files = set(self.find_json_files_in_downloads())
         
         try:
             while True:
-                json_files = self.find_report_json_files()
+                time.sleep(interval)
+                current_files = set(self.find_json_files_in_downloads())
+                new_files = current_files - seen_files
                 
-                for json_file in json_files:
-                    if json_file not in processed_files:
-                        print(f"\n🆕 Wykryto nowy plik: {json_file.name}")
-                        
-                        destination = self.saved_sections / json_file.name
+                if new_files:
+                    print(f"\n{Colors.GREEN}✅ New file detected!{Colors.END}")
+                    for file in new_files:
                         try:
-                            shutil.move(str(json_file), str(destination))
-                            print(f"✅ Automatycznie przeniesiono do: saved_sections/")
-                            processed_files.add(json_file)
+                            dest = self.saved_sections / file.name
+                            if dest.exists():
+                                timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+                                base_name = dest.stem
+                                dest = self.saved_sections / f"{base_name}_{timestamp}.json"
+                            
+                            shutil.move(str(file), str(dest))
+                            print(f"  {Colors.GREEN}✅ Auto-moved:{Colors.END} {file.name}")
                         except Exception as e:
-                            print(f"❌ Błąd: {e}")
-                
-                time.sleep(2)  # Sprawdzaj co 2 sekundy
-                
+                            print(f"  {Colors.RED}❌ Error:{Colors.END} {e}")
+                    
+                    seen_files = current_files
+                else:
+                    print(f"{Colors.BLUE}.{Colors.END}", end='', flush=True)
+        
         except KeyboardInterrupt:
-            print("\n\n⏹️  Zatrzymano tryb obserwacji")
+            print(f"\n\n{Colors.YELLOW}👋 Stopped watching{Colors.END}")
 
 
 def main():
-    """Główna funkcja programu"""
+    """Main program function"""
     print("=" * 60)
-    print("   Pomocnik Zarządzania Plikami JSON")
+    print(f"{Colors.BOLD}   File Manager - Reporting System{Colors.END}")
     print("=" * 60)
     
     manager = FileManager()
     
-    if len(os.sys.argv) > 1:
-        command = os.sys.argv[1]
+    if len(sys.argv) > 1:
+        command = sys.argv[1]
         
         if command == "move":
-            manager.move_files_to_saved_sections()
+            manager.move_files_from_downloads()
         elif command == "list":
             manager.list_saved_sections()
-        elif command == "open":
-            manager.open_folders()
         elif command == "watch":
-            manager.auto_move_on_watch()
+            interval = int(sys.argv[2]) if len(sys.argv) > 2 else 5
+            manager.watch_downloads(interval)
         else:
-            print(f"❌ Nieznana komenda: {command}")
-            print("\nDostępne komendy:")
-            print("  python file_manager.py move    - Przenieś pliki z Downloads")
-            print("  python file_manager.py list    - Wyświetl zapisane pliki")
-            print("  python file_manager.py open    - Otwórz foldery")
-            print("  python file_manager.py watch   - Auto-przenoszenie (tryb obserwacji)")
+            print(f"{Colors.RED}❌ Unknown command: {command}{Colors.END}")
+            print("\nAvailable commands:")
+            print("  python file_manager.py move         - Move files from Downloads")
+            print("  python file_manager.py list         - List saved sections")
+            print("  python file_manager.py watch [sec]  - Watch Downloads (auto-move)")
     else:
-        # Interaktywny tryb
-        print("\n1. 📥 Przenieś pliki JSON z Downloads")
-        print("2. 📋 Wyświetl zapisane pliki")
-        print("3. 📂 Otwórz foldery w eksploratorze")
-        print("4. 👁️  Tryb obserwacji (auto-przenoszenie)")
-        print("0. Wyjście")
+        # Interactive mode
+        print(f"\n{Colors.BOLD}1.{Colors.END} Move files from Downloads")
+        print(f"{Colors.BOLD}2.{Colors.END} List saved sections")
+        print(f"{Colors.BOLD}3.{Colors.END} Watch Downloads folder")
+        print(f"{Colors.BOLD}0.{Colors.END} Exit")
         
-        choice = input("\nWybierz opcję: ").strip()
+        choice = input(f"\n{Colors.BOLD}Select option: {Colors.END}").strip()
         
         if choice == "1":
-            manager.move_files_to_saved_sections()
-            input("\nNaciśnij Enter aby zakończyć...")
+            manager.move_files_from_downloads()
         elif choice == "2":
             manager.list_saved_sections()
-            input("\nNaciśnij Enter aby zakończyć...")
         elif choice == "3":
-            manager.open_folders()
-            input("\nNaciśnij Enter aby zakończyć...")
-        elif choice == "4":
-            manager.auto_move_on_watch()
+            manager.watch_downloads()
         elif choice == "0":
-            print("Zamykanie...")
+            print("Closing...")
         else:
-            print("❌ Nieprawidłowa opcja")
+            print(f"{Colors.RED}❌ Invalid option{Colors.END}")
 
 
 if __name__ == "__main__":
-    import sys
-    os.sys = sys
     main()
