@@ -171,18 +171,6 @@
             border-color: #3498db;
         }
 
-        .section-actions {
-            padding: 15px 20px;
-            background-color: #f8f9fa;
-            border-top: 1px solid #ecf0f1;
-            display: none;
-        }
-
-        .edit-mode .section-actions,
-        .section-actions.edit-mode {
-            display: block !important;
-        }
-
         .status-message {
             padding: 15px;
             margin-bottom: 20px;
@@ -210,6 +198,19 @@
             border-top: 2px solid #ecf0f1;
         }
 
+        .save-all-section {
+            text-align: center;
+            margin: 40px 0;
+            padding: 30px;
+            background-color: #ecf0f1;
+            border-radius: 5px;
+        }
+
+        .btn-large {
+            padding: 15px 40px;
+            font-size: 18px;
+        }
+
         .signature-row {
             display: flex;
             justify-content: space-around;
@@ -228,7 +229,7 @@
         }
 
         @media print {
-            .controls, .section-actions, .btn {
+            .controls, .save-all-section, .btn {
                 display: none !important;
             }
 
@@ -308,11 +309,6 @@
                         placeholder="List the most important findings..."></textarea>
                 </div>
             </div>
-            <div class="section-actions" style="display: none;">
-                <button class="btn btn-success" onclick="saveSection('overall-assessment')">
-                    💾 Save Section
-                </button>
-            </div>
         </div>
 
         <!-- Section 2: Completeness Analysis -->
@@ -349,11 +345,6 @@
                     <textarea class="field-input edit-mode" id="compl-recommendations" style="display: none;"
                         placeholder="Provide recommendations to improve completeness..."></textarea>
                 </div>
-            </div>
-            <div class="section-actions" style="display: none;">
-                <button class="btn btn-success" onclick="saveSection('completeness-analysis')">
-                    💾 Save Section
-                </button>
             </div>
         </div>
 
@@ -392,11 +383,6 @@
                         placeholder="List and describe detected anomalies..."></textarea>
                 </div>
             </div>
-            <div class="section-actions" style="display: none;">
-                <button class="btn btn-success" onclick="saveSection('accuracy-consistency')">
-                    💾 Save Section
-                </button>
-            </div>
         </div>
 
         <!-- Section 4: Action Plan & Next Steps -->
@@ -434,11 +420,13 @@
                         placeholder="Define timeline and assign responsibilities..."></textarea>
                 </div>
             </div>
-            <div class="section-actions" style="display: none;">
-                <button class="btn btn-success" onclick="saveSection('action-plan')">
-                    💾 Save Section
-                </button>
-            </div>
+        </div>
+
+        <!-- Save All Button -->
+        <div class="save-all-section" style="display: none;">
+            <button class="btn btn-success btn-large" onclick="saveAllSections()">
+                💾 Save All Sections
+            </button>
         </div>
 
         <!-- Signature Block -->
@@ -471,7 +459,7 @@
         let editMode = false;
         const DATA_FILE_PREFIX = 'report_data';
 
-        // Przełączanie trybu edycji
+        // Toggle edit mode
         function toggleEditMode() {
             editMode = !editMode;
             const indicator = document.getElementById('modeIndicator');
@@ -487,21 +475,18 @@
                 toggleBtn.classList.add('btn-warning');
                 completeBtn.style.display = 'inline-block';
                 
-                // Pokaż wszystkie pola textarea (edycja)
+                // Show all textarea fields (editing)
                 document.querySelectorAll('.field-input').forEach(el => {
                     el.style.display = 'block';
                 });
                 
-                // Ukryj wszystkie widoki (read-only)
+                // Hide all view fields (read-only)
                 document.querySelectorAll('.field-value').forEach(el => {
                     el.style.display = 'none';
                 });
                 
-                // IMPORTANT: Show save buttons
-                document.querySelectorAll('.section-actions').forEach(el => {
-                    el.style.display = 'block';
-                    console.log('Showing save button for section'); // DEBUG
-                });
+                // Show save all button
+                document.querySelector('.save-all-section').style.display = 'block';
                 
             } else {
                 // VIEW MODE
@@ -512,24 +497,22 @@
                 toggleBtn.classList.add('btn-primary');
                 completeBtn.style.display = 'none';
                 
-                // Ukryj pola edycji
+                // Hide edit fields
                 document.querySelectorAll('.field-input').forEach(el => {
                     el.style.display = 'none';
                 });
                 
-                // Pokaż widoki
+                // Show view fields
                 document.querySelectorAll('.field-value').forEach(el => {
                     el.style.display = 'block';
                 });
                 
-                // Ukryj przyciski zapisywania
-                document.querySelectorAll('.section-actions').forEach(el => {
-                    el.style.display = 'none';
-                });
+                // Hide save all button
+                document.querySelector('.save-all-section').style.display = 'none';
             }
         }
 
-        // Zapisywanie sekcji
+        // Save section
         function saveSection(sectionId) {
             const section = document.querySelector(`[data-section-id="${sectionId}"]`);
             const inputs = section.querySelectorAll('.field-input');
@@ -545,27 +528,81 @@
                 const fieldValue = input.value;
                 data.fields[fieldId] = fieldValue;
                 
-                // Zaktualizuj widok
+                // Update view
                 const viewElement = document.getElementById(fieldId + '-view');
                 if (viewElement) {
-                    viewElement.textContent = fieldValue || '[Brak danych]';
+                    viewElement.textContent = fieldValue || '[No data]';
                 }
             });
 
-            // Zapisz do localStorage (w prawdziwej aplikacji byłoby to API call)
+            // Save to localStorage (in real app this would be an API call)
             const storageKey = `${DATA_FILE_PREFIX}_${sectionId}`;
             localStorage.setItem(storageKey, JSON.stringify(data));
 
-            // Zaktualizuj metadane sekcji
+            // Update section metadata
             updateSectionMeta(sectionId, data.author, new Date(data.timestamp));
 
-            // Wygeneruj plik JSON do pobrania
+            // Generate JSON file for download
             downloadJSON(data, `${sectionId}_${Date.now()}.json`);
 
-            showStatus(`Sekcja "${sectionId}" została zapisana pomyślnie!`, 'success');
+            return data;
         }
 
-        // Aktualizacja metadanych sekcji
+        // Save all sections at once
+        function saveAllSections() {
+            const author = prompt('Enter your full name:') || 'Anonymous';
+            const sections = ['overall-assessment', 'completeness-analysis', 'accuracy-consistency', 'action-plan'];
+            const allData = {};
+            let savedCount = 0;
+
+            sections.forEach(sectionId => {
+                const section = document.querySelector(`[data-section-id="${sectionId}"]`);
+                const inputs = section.querySelectorAll('.field-input');
+                const data = {
+                    sectionId: sectionId,
+                    timestamp: new Date().toISOString(),
+                    author: author,
+                    fields: {}
+                };
+
+                inputs.forEach(input => {
+                    const fieldId = input.id;
+                    const fieldValue = input.value;
+                    data.fields[fieldId] = fieldValue;
+                    
+                    // Update view
+                    const viewElement = document.getElementById(fieldId + '-view');
+                    if (viewElement) {
+                        viewElement.textContent = fieldValue || '[No data]';
+                    }
+                });
+
+                // Save to localStorage
+                const storageKey = `${DATA_FILE_PREFIX}_${sectionId}`;
+                localStorage.setItem(storageKey, JSON.stringify(data));
+
+                // Update section metadata
+                updateSectionMeta(sectionId, author, new Date(data.timestamp));
+
+                // Add to combined data
+                allData[sectionId] = data;
+                savedCount++;
+            });
+
+            // Download one combined JSON file with all sections
+            const combinedData = {
+                reportType: 'Data Quality Report',
+                savedAt: new Date().toISOString(),
+                author: author,
+                sections: allData
+            };
+
+            downloadJSON(combinedData, `data_quality_report_full_${Date.now()}.json`);
+
+            showStatus(`All ${savedCount} sections saved successfully!`, 'success');
+        }
+
+        // Update section metadata
         function updateSectionMeta(sectionId, author, date) {
             const authorEl = document.getElementById(getSectionPrefix(sectionId) + '-author');
             const dateEl = document.getElementById(getSectionPrefix(sectionId) + '-date');
@@ -589,7 +626,7 @@
             return prefixes[sectionId] || sectionId;
         }
 
-        // Pobierz plik JSON
+        // Download JSON file
         function downloadJSON(data, filename) {
             const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
@@ -602,7 +639,7 @@
             URL.revokeObjectURL(url);
         }
 
-        // Wczytaj zapisane dane
+        // Load saved data
         function loadSavedData() {
             const fileInput = document.createElement('input');
             fileInput.type = 'file';
@@ -622,10 +659,10 @@
                             loadedCount++;
                             
                             if (loadedCount === files.length) {
-                                showStatus(`Wczytano ${loadedCount} sekcji pomyślnie!`, 'success');
+                                showStatus(`Loaded ${loadedCount} sections successfully!`, 'success');
                             }
                         } catch (error) {
-                            showStatus(`Błąd wczytywania pliku: ${file.name}`, 'error');
+                            showStatus(`Error loading file: ${file.name}`, 'error');
                         }
                     };
                     reader.readAsText(file);
@@ -635,11 +672,11 @@
             fileInput.click();
         }
 
-        // Załaduj dane sekcji
+        // Load section data
         function loadSectionData(data) {
             const { sectionId, author, timestamp, fields } = data;
             
-            // Załaduj pola
+            // Load fields
             Object.keys(fields).forEach(fieldId => {
                 const input = document.getElementById(fieldId);
                 const view = document.getElementById(fieldId + '-view');
@@ -648,14 +685,14 @@
                     input.value = fields[fieldId];
                 }
                 if (view) {
-                    view.textContent = fields[fieldId] || '[Brak danych]';
+                    view.textContent = fields[fieldId] || '[No data]';
                 }
             });
 
-            // Zaktualizuj metadane
+            // Update metadata
             updateSectionMeta(sectionId, author, new Date(timestamp));
 
-            // Zapisz do localStorage
+            // Save to localStorage
             localStorage.setItem(`${DATA_FILE_PREFIX}_${sectionId}`, JSON.stringify(data));
         }
 
@@ -733,7 +770,7 @@
             }
         }
 
-        // Pokaż komunikat statusu
+        // Show status message
         function showStatus(message, type) {
             const statusEl = document.getElementById('statusMessage');
             statusEl.textContent = message;
